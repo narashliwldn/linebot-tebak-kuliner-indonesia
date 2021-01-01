@@ -6,7 +6,6 @@ use App\Gateway\EventLogGateway;
 use App\Gateway\FoodQuestionGateway;
 use App\Gateway\SnackQuestionGateway;
 use App\Gateway\UserGateway;
-use App\Gateway\QuestionGateway;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Log\Logger;
@@ -54,10 +53,6 @@ class Webhook extends Controller
      */
     private $snackQuestionGateway;
     /**
-     * @var QuestionGateway
-     */
-    private $questionGateway;
-    /**
      * @var array
      */
     private $user;
@@ -70,8 +65,7 @@ class Webhook extends Controller
         EventLogGateway $logGateway,
         UserGateway $userGateway,
         FoodQuestionGateway $foodQuestionGateway,
-        SnackQuestionGateway $snackQuestionGateway,
-        QuestionGateway $questionGateway
+        SnackQuestionGateway $snackQuestionGateway
     ) {
         $this->request = $request;
         $this->response = $response;
@@ -80,7 +74,6 @@ class Webhook extends Controller
         $this->userGateway = $userGateway;
         $this->foodQuestionGateway = $foodQuestionGateway;
         $this->snackQuestionGateway = $snackQuestionGateway;
-        $this->questionGateway = $questionGateway;
 
         // create bot object
         $httpClient = new CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
@@ -173,27 +166,46 @@ class Webhook extends Controller
     {
         if(strtolower($userMessage) == 'mulai')
         {
+
           $carousel = new CarouselTemplateBuilder([
             new CarouselColumnTemplateBuilder(
-              
-              )
+              "Makanan",
+              "Game menebak tentang makanan khas di daerah seluruh Indonesia",
+              'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
+              [new MessageTemplateActionBuilder("Makanan", "makanan")]
+            ),
+            new CarouselColumnTemplateBuilder(
+              "Snack/Kue",
+              "Game menebak tentang jajanan khas di daerah seluruh Indonesia",
+              'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
+              [new MessageTemplateActionBuilder("Snack/Kue", "snack")]
+            )
           ]);
+
+          $templateMessage = new TemplateMessageBuilder('Silahkan pilih game mana yang ingin dimainkan', $carousel);
+          $this->bot->replyMessage($event['replyToken'], $templateMessage);
+          $food = false;
+          $snack = false;
+
+            //jika memilih makanan
             if (strtolower($userMessage) == 'makanan') {
+              $food = true;
               // reset score
               $this->userGateway->setScore($this->user['user_id'], 0);
               // update number progress
               $this->userGateway->setUserProgress($this->user['user_id'], 1);
               // send question no.1 about food
-              $this->sendQuestion($event['replyToken'], 1);
+              $this->sendFoodQuestion($event['replyToken'], 1);
             }
-
+            //jika memilih jajanan
             elseif (strtolower($userMessage) == 'kue/snack') {
+              $snack = true;
               // reset score
               $this->userGateway->setScore($this->user['user_id'], 0);
               // update number progress
               $this->userGateway->setUserProgress($this->user['user_id'], 1);
               // send question no.1 about snack
-              $this->sendQuestion($event['replyToken'], 1);
+              $this->sendSnackQuestion($event['replyToken'], 1);
             }
             // // reset score
             // $this->userGateway->setScore($this->user['user_id'], 0);
@@ -210,7 +222,12 @@ class Webhook extends Controller
 
         // if user already begin test
     } else {
-        $this->checkAnswer($userMessage, $event['replyToken']);
+        if ($makanan) {
+          $this->checkFoodAnswer($userMessage, $event['replyToken']);
+        }
+        else if($snack) {
+          $this->checkSnackAnswer($userMessage, $event['replyToken']);
+        }
     }
   }
 
@@ -234,10 +251,10 @@ class Webhook extends Controller
     $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
   }
 
-  private function sendQuestion($replyToken, $questionNum=1)
+  private function sendFoodQuestion($replyToken, $questionNum=1)
 {
     // get question from database
-    $question = $this->questionGateway->getQuestion($questionNum);
+    $question = $this->foodQuestionGateway->getFoodQuestion($questionNum);
 
     // prepare answer options
     for($opsi = "a"; $opsi <= "d"; $opsi++) {
@@ -255,10 +272,31 @@ class Webhook extends Controller
     $response = $this->bot->replyMessage($replyToken, $messageBuilder);
 }
 
-private function checkAnswer($message, $replyToken)
+private function sendSnackQuestion($replyToken, $questionNum=1)
+{
+  // get question from database
+  $question = $this->snackQuestionGateway->getSnackQuestion($questionNum);
+
+  // prepare answer options
+  for($opsi = "a"; $opsi <= "d"; $opsi++) {
+      if(!empty($question['option_'.$opsi]))
+          $options[] = new MessageTemplateActionBuilder($question['option_'.$opsi], $question['option_'.$opsi]);
+  }
+
+  // prepare button template
+  $buttonTemplate = new ButtonTemplateBuilder($question['number']."/9", $question['text'], $question['image'], $options);
+
+  // build message
+  $messageBuilder = new TemplateMessageBuilder("Gunakan mobile app untuk melihat soal", $buttonTemplate);
+
+  // send message
+  $response = $this->bot->replyMessage($replyToken, $messageBuilder);
+}
+
+private function checkFoodAnswer($message, $replyToken)
 {
     // if answer is true, increment score
-    if($this->questionGateway->isAnswerEqual($this->user['number'], $message)){
+    if($this->foodQuestionGateway->isAnswerEqual($this->user['number'], $message)){
         $this->user['score']++;
         $this->userGateway->setScore($this->user['user_id'], $this->user['score']);
     }
@@ -269,7 +307,7 @@ private function checkAnswer($message, $replyToken)
         $this->userGateway->setUserProgress($this->user['user_id'], $this->user['number'] + 1);
 
         // send next question
-        $this->sendQuestion($replyToken, $this->user['number'] + 1);
+        $this->sendFoodQuestion($replyToken, $this->user['number'] + 1);
     }
     else {
         // create user score message
@@ -297,5 +335,48 @@ private function checkAnswer($message, $replyToken)
         $this->userGateway->setUserProgress($this->user['user_id'], 0);
     }
   }
+
+  private function checkSnackAnswer($message, $replyToken)
+  {
+      // if answer is true, increment score
+      if($this->snackQuestionGateway->isAnswerEqual($this->user['number'], $message)){
+          $this->user['score']++;
+          $this->userGateway->setScore($this->user['user_id'], $this->user['score']);
+      }
+
+      if($this->user['number'] < 10)
+      {
+          // update number progress
+          $this->userGateway->setUserProgress($this->user['user_id'], $this->user['number'] + 1);
+
+          // send next question
+          $this->sendSnackQuestion($replyToken, $this->user['number'] + 1);
+      }
+      else {
+          // create user score message
+          $message = 'Skormu '. $this->user['score'];
+          $textMessageBuilder1 = new TextMessageBuilder($message);
+
+          // create sticker message
+          $stickerId = ($this->user['score'] < 8) ? 100 : 114;
+          $stickerMessageBuilder = new StickerMessageBuilder(1, $stickerId);
+
+          // create play again message
+          $message = ($this->user['score'] < 8) ?
+              'Wkwkwk! Nyerah? Ketik "MULAI" untuk bermain lagi!':
+              'Great! Mantap bro! Ketik "MULAI" untuk bermain lagi!';
+          $textMessageBuilder2 = new TextMessageBuilder($message);
+
+          // merge all message
+          $multiMessageBuilder = new MultiMessageBuilder();
+          $multiMessageBuilder->add($textMessageBuilder1);
+          $multiMessageBuilder->add($stickerMessageBuilder);
+          $multiMessageBuilder->add($textMessageBuilder2);
+
+          // send reply message
+          $this->bot->replyMessage($replyToken, $multiMessageBuilder);
+          $this->userGateway->setUserProgress($this->user['user_id'], 0);
+      }
+    }
 
 }
