@@ -162,6 +162,7 @@ class Webhook extends Controller
 
   private function textMessage($event)
 {
+   $food = false;
    $userMessage = $event['message']['text'];
    if($this->user['number'] == 0)
    {
@@ -199,7 +200,6 @@ class Webhook extends Controller
        }
        //jika memilih jajanan
        elseif (strtolower($userMessage) == 'kue/snack') {
-         $snack = true;
          // reset score
          $this->userGateway->setScore($this->user['user_id'], 0);
          // update number progress
@@ -216,7 +216,7 @@ class Webhook extends Controller
 
        // if user already begin test
    } else {
-     if(strtolower($userMessage) == 'makanan'){
+     if($food){
        $this->checkFoodAnswer($userMessage, $event['replyToken']);
      }
      else {
