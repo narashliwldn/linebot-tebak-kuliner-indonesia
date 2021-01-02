@@ -170,19 +170,19 @@ class Webhook extends Controller
         {
           $message = new TextMessageBuilder('test');
           $this->bot->replyMessage($event['replyToken'], $message);
-          
+
           $carousel = new CarouselTemplateBuilder([
             new CarouselColumnTemplateBuilder(
-              "Makanan",
-              "Game menebak tentang makanan khas di daerah seluruh Indonesia",
-              "https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg",
-              [new MessageTemplateActionBuilder("Makanan", "makanan")]
+              'Makanan',
+              'Game menebak tentang makanan khas di daerah seluruh Indonesia',
+              'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
+              [new MessageTemplateActionBuilder('Makanan', 'makanan')]
             ),
             new CarouselColumnTemplateBuilder(
-              "Snack/Kue",
-              "Game menebak tentang jajanan khas di daerah seluruh Indonesia",
-              "https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg",
-              [new MessageTemplateActionBuilder("Snack/Kue", "snack")]
+              'Snack/Kue',
+              'Game menebak tentang jajanan khas di daerah seluruh Indonesia',
+              'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
+              [new MessageTemplateActionBuilder('Snack/Kue', 'kue/snack')]
             )
           ]);
 
