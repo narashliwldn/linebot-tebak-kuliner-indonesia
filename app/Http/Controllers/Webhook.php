@@ -164,6 +164,9 @@ class Webhook extends Controller
   private function textMessage($event)
 {
     $userMessage = $event['message']['text'];
+    $food = false;
+    $snack = false;
+    
     if($this->user['number'] == 0)
     {
         if(strtolower($userMessage) == 'mulai')
@@ -295,7 +298,7 @@ private function checkFoodAnswer($message, $replyToken)
         $this->userGateway->setScore($this->user['user_id'], $this->user['score']);
     }
 
-    if($this->user['number'] < 10)
+    if($this->user['number'] < 9)
     {
         // update number progress
         $this->userGateway->setUserProgress($this->user['user_id'], $this->user['number'] + 1);
@@ -338,7 +341,7 @@ private function checkFoodAnswer($message, $replyToken)
           $this->userGateway->setScore($this->user['user_id'], $this->user['score']);
       }
 
-      if($this->user['number'] < 10)
+      if($this->user['number'] < 9)
       {
           // update number progress
           $this->userGateway->setUserProgress($this->user['user_id'], $this->user['number'] + 1);
