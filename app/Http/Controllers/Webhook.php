@@ -166,9 +166,6 @@ class Webhook extends Controller
     $userMessage = $event['message']['text'];
     if($this->user['number'] == 0)
     {
-        $food = FALSE;
-        $snack = FALSE;
-        
         if(strtolower($userMessage) == 'mulai')
         {
           $httpClient = $httpClient = new CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
@@ -219,7 +216,7 @@ class Webhook extends Controller
 
         // if user already begin test
     } else {
-        if ($makanan) {
+        if ($food) {
           $this->checkFoodAnswer($userMessage, $event['replyToken']);
         }
         else if($snack) {
