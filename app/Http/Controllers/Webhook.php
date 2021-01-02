@@ -168,7 +168,9 @@ class Webhook extends Controller
     {
         if(strtolower($userMessage) == 'mulai')
         {
-
+          $message = new TextMessageBuilder('test');
+          $this->bot->replyMessage($event['replyToken'], $message);
+          
           $carousel = new CarouselTemplateBuilder([
             new CarouselColumnTemplateBuilder(
               "Makanan",
