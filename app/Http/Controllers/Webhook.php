@@ -165,6 +165,8 @@ class Webhook extends Controller
    $userMessage = $event['message']['text'];
    if($this->user['number'] == 0)
    {
+     $food = false;
+     $snack = false;
        if(strtolower($userMessage) == 'mulai')
        {
 
@@ -215,12 +217,12 @@ class Webhook extends Controller
 
        // if user already begin test
    } else {
-       // if ($food) {
+       if ($food) {
          $this->checkFoodAnswer($userMessage, $event['replyToken']);
-       // }
-       // else if($snack) {
+       }
+       else if($snack) {
          $this->checkSnackAnswer($userMessage, $event['replyToken']);
-       // }
+       }
    }
  }
 
