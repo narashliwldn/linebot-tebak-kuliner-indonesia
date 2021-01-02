@@ -170,23 +170,6 @@ class Webhook extends Controller
         {
           $food = TRUE;
           $snack = FALSE;
-          // $carousel = new CarouselTemplateBuilder([
-          //   new CarouselColumnTemplateBuilder(
-          //     'Makanan',
-          //     'Game menebak tentang makanan khas di daerah seluruh Indonesia',
-          //     'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
-          //     [new MessageTemplateActionBuilder('Makanan', 'makanan')]
-          //   ),
-          //   new CarouselColumnTemplateBuilder(
-          //     'Snack/Kue',
-          //     'Game menebak tentang jajanan khas di daerah seluruh Indonesia',
-          //     'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
-          //     [new MessageTemplateActionBuilder('Snack/Kue', 'kue/snack')]
-          //   )
-          // ]);
-          //
-          // $templateMessage = new TemplateMessageBuilder('Silahkan pilih game mana yang ingin dimainkan', $carousel);
-          // $this->bot->replyMessage($event['replyToken'], $templateMessage);
 
           $httpClient = $httpClient = new CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
           $carousel = file_get_contents("../carousel_message.json"); // template flex message
@@ -200,11 +183,6 @@ class Webhook extends Controller
                               ]
                             ],
                         ]);
-
-                        $response->getBody()->write($result->getJSONDecodedBody());
-                    return $response
-                        ->withHeader('Content-Type', 'application/json')
-                        ->withStatus($result->getHTTPStatus());
 
             //jika memilih makanan
             if (strtolower($userMessage) == 'makanan') {
@@ -226,6 +204,11 @@ class Webhook extends Controller
               // send question no.1 about snack
               $this->sendSnackQuestion($event['replyToken'], 1);
             }
+
+            $response->getBody()->write($result->getJSONDecodedBody());
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus($result->getHTTPStatus());
 
         } else {
             $message = 'Silakan kirim pesan "MULAI" untuk memulai kuis.';
