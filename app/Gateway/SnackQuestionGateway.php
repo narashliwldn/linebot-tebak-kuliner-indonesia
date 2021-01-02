@@ -32,7 +32,7 @@ class SnackQuestionGateway
 
     function isAnswerEqual(int $number, string $answer)
     {
-        return $this->db->table('questions')
+        return $this->db->table('snack_questions')
             ->where('number', $number)
             ->where('answer', $answer)
             ->exists();
