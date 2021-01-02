@@ -157,7 +157,6 @@ class Webhook extends Controller
             $profile['userId'],
             $profile['displayName']
         );
-
     }
   }
 
@@ -168,7 +167,6 @@ class Webhook extends Controller
   {
       if(strtolower($userMessage) == 'mulai')
       {
-
         $httpClient = $httpClient = new CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
         $carousel = file_get_contents("../carousel_message.json"); // template flex message
         $result = $httpClient->post(LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply', [
@@ -183,32 +181,31 @@ class Webhook extends Controller
                       ]);
 
           $response->getBody()->write($result->getJSONDecodedBody());
-      return $response
-          ->withHeader('Content-Type', 'application/json')
-          ->withStatus($result->getHTTPStatus());
+          return $response
+              ->withHeader('Content-Type', 'application/json')
+              ->withStatus($result->getHTTPStatus());
 
-          //jika memilih makanan
-          if (strtolower($userMessage) == 'makanan') {
-            $food = true;
-            // reset score
-            $this->userGateway->setScore($this->user['user_id'], 0);
-            // update number progress
-            $this->userGateway->setUserProgress($this->user['user_id'], 1);
-            // send question no.1 about food
-            $this->sendFoodQuestion($event['replyToken'], 1);
-          }
-          //jika memilih jajanan
-          elseif (strtolower($userMessage) == 'kue/snack') {
-            $snack = true;
-            // reset score
-            $this->userGateway->setScore($this->user['user_id'], 0);
-            // update number progress
-            $this->userGateway->setUserProgress($this->user['user_id'], 1);
-            // send question no.1 about snack
-            $this->sendSnackQuestion($event['replyToken'], 1);
-          }
+      }
 
-      } else {
+      //jika memilih makanan
+      elseif (strtolower($userMessage) == 'makanan') {
+        // reset score
+        $this->userGateway->setScore($this->user['user_id'], 0);
+        // update number progress
+        $this->userGateway->setUserProgress($this->user['user_id'], 1);
+        // send question no.1 about food
+        $this->sendFoodQuestion($event['replyToken'], 1);
+      }
+      //jika memilih jajanan
+      elseif (strtolower($userMessage) == 'kue/snack') {
+        // reset score
+        $this->userGateway->setScore($this->user['user_id'], 0);
+        // update number progress
+        $this->userGateway->setUserProgress($this->user['user_id'], 1);
+        // send question no.1 about snack
+        $this->sendSnackQuestion($event['replyToken'], 1);
+      }
+      else {
           $message = 'Silakan kirim pesan "MULAI" untuk memulai kuis.';
           $textMessageBuilder = new TextMessageBuilder($message);
           $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
