@@ -161,60 +161,70 @@ class Webhook extends Controller
   }
 
   private function textMessage($event)
-  {
-      $userMessage = $event['message']['text'];
-      if($this->user['number'] == 0)
-      {
-          if(strtolower($userMessage) == 'mulai')
-          {
-            $httpClient = $httpClient = new CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
-            $carousel = file_get_contents("../carousel_message.json"); // template flex message
-            $result = $httpClient->post(LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply', [
-                    'replyToken' => $event['replyToken'],
-                    'messages'   => [
-                            [
-                              'type'     => 'flex',
-                              'altText'  => 'Test Flex Message',
-                              'contents' => json_decode($carousel)
-                            ]
-                          ],
-                      ]);
+{
+   $userMessage = $event['message']['text'];
+   if($this->user['number'] == 0)
+   {
+       if(strtolower($userMessage) == 'mulai')
+       {
 
-            $response->getBody()->write($result->getJSONDecodedBody());
-            return $response
-                ->withHeader('Content-Type', 'application/json')
-                ->withStatus($result->getHTTPStatus());
-          }
+         $carousel = new CarouselTemplateBuilder([
+           new CarouselColumnTemplateBuilder(
+             "Makanan",
+             "Game menebak tentang makanan khas di daerah seluruh Indonesia",
+             "https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg",
+             [new MessageTemplateActionBuilder("Makanan", "makanan")]
+           ),
+           new CarouselColumnTemplateBuilder(
+             "Snack/Kue",
+             "Game menebak tentang jajanan khas di daerah seluruh Indonesia",
+             "https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg",
+             [new MessageTemplateActionBuilder("Snack/Kue", "snack")]
+           )
+         ]);
 
-          elseif (strtolower($userMessage) == 'makanan') {
-            // reset score
-            $this->userGateway->setScore($this->user['user_id'], 0);
-            // update number progress
-            $this->userGateway->setUserProgress($this->user['user_id'], 1);
-            // send question no.1
-            $this->sendFoodQuestion($event['replyToken'], 1);
-          }
+         $food = false;
+         $snack = false;
+         $templateMessage = new TemplateMessageBuilder('Silahkan pilih game mana yang ingin dimainkan', $carousel);
+         $this->bot->replyMessage($event['replyToken'], $templateMessage);
 
-          elseif (strtolower($userMessage) == 'snack/kue') {
-            // reset score
-            $this->userGateway->setScore($this->user['user_id'], 0);
-            // update number progress
-            $this->userGateway->setUserProgress($this->user['user_id'], 1);
-            // send question no.1
-            $this->sendSnackQuestion($event['replyToken'], 1);
-          }
+           //jika memilih makanan
+           if (strtolower($userMessage) == 'makanan') {
+             $food = true;
+             // reset score
+             $this->userGateway->setScore($this->user['user_id'], 0);
+             // update number progress
+             $this->userGateway->setUserProgress($this->user['user_id'], 1);
+             // send question no.1 about food
+             $this->sendFoodQuestion($event['replyToken'], 1);
+           }
+           //jika memilih jajanan
+           elseif (strtolower($userMessage) == 'kue/snack') {
+             $snack = true;
+             // reset score
+             $this->userGateway->setScore($this->user['user_id'], 0);
+             // update number progress
+             $this->userGateway->setUserProgress($this->user['user_id'], 1);
+             // send question no.1 about snack
+             $this->sendSnackQuestion($event['replyToken'], 1);
+           }
 
-          else {
-              $message = 'Silakan kirim pesan "MULAI" untuk memulai kuis.';
-              $textMessageBuilder = new TextMessageBuilder($message);
-              $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
-          }
+       } else {
+           $message = 'Silakan kirim pesan "MULAI" untuk memulai kuis.';
+           $textMessageBuilder = new TextMessageBuilder($message);
+           $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+       }
 
-          // if user already begin test
-      } else {
-          $this->checkFoodAnswer($userMessage, $event['replyToken']);
-      }
-  }
+       // if user already begin test
+   } else {
+       if ($food) {
+         $this->checkFoodAnswer($userMessage, $event['replyToken']);
+       }
+       else if($snack) {
+         $this->checkSnackAnswer($userMessage, $event['replyToken']);
+       }
+   }
+ }
 
   private function stickerMessage($event)
 {
