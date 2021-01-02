@@ -183,8 +183,6 @@ class Webhook extends Controller
            )
          ]);
 
-         $food = false;
-         $snack = false;
          $templateMessage = new TemplateMessageBuilder('Silahkan pilih game mana yang ingin dimainkan', $carousel);
          $this->bot->replyMessage($event['replyToken'], $templateMessage);
 
@@ -217,12 +215,12 @@ class Webhook extends Controller
 
        // if user already begin test
    } else {
-       if ($food) {
+       // if ($food) {
          $this->checkFoodAnswer($userMessage, $event['replyToken']);
-       }
-       else if($snack) {
+       // }
+       // else if($snack) {
          $this->checkSnackAnswer($userMessage, $event['replyToken']);
-       }
+       // }
    }
  }
 
