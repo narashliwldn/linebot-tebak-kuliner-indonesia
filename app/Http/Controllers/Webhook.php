@@ -137,8 +137,8 @@ class Webhook extends Controller
         $profile = $res->getJSONDecodedBody();
 
         // create welcome message
-        $message  = "Salam kenal, " . $profile['displayName'] . "!\n";
-        $message .= "Silakan kirim pesan \"MULAI\" untuk memulai kuis Tebak Kode.";
+        $message  = "Halo! Salam kenal, " . $profile['displayName'] . "!\n";
+        $message .= "Silakan kirim pesan \"MULAI\" untuk memulai kuis Tebak Kuliner Indonesia. Setelah kirim \"MULAI\", kamu akan diberi pilihan kuis apa yang mau dimainkan";
         $textMessageBuilder = new TextMessageBuilder($message);
 
         // create sticker message
@@ -174,13 +174,13 @@ class Webhook extends Controller
               "Makanan",
               "Game menebak tentang makanan khas di daerah seluruh Indonesia",
               "https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg",
-              new MessageTemplateActionBuilder("Makanan", "makanan")
+              [new MessageTemplateActionBuilder("Makanan", "makanan")]
             ),
             new CarouselColumnTemplateBuilder(
               "Snack/Kue",
               "Game menebak tentang jajanan khas di daerah seluruh Indonesia",
               "https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg",
-              new MessageTemplateActionBuilder("Snack/Kue", "snack")
+              [new MessageTemplateActionBuilder("Snack/Kue", "snack")]
             )
           ]);
 
