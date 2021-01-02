@@ -162,11 +162,11 @@ class Webhook extends Controller
 
   private function textMessage($event)
 {
-   $userMessage = $event['message']['text'];
+    $food = false;
+    $snack = false;
+    $userMessage = $event['message']['text'];
    if($this->user['number'] == 0)
    {
-     $food = false;
-     $snack = false;
        if(strtolower($userMessage) == 'mulai')
        {
 
