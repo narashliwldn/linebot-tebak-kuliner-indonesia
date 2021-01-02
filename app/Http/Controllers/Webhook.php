@@ -189,7 +189,7 @@ class Webhook extends Controller
           // $this->bot->replyMessage($event['replyToken'], $templateMessage);
 
           $carousel = file_get_contents("../carousel_message.json"); // template flex message
-                        $result = $httpClient->post(LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply', [
+                        $result = $this->bot->post(LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply', [
                             'replyToken' => $event['replyToken'],
                             'messages'   => [
                                 [
