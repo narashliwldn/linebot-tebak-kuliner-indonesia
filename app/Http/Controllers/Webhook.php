@@ -170,23 +170,40 @@ class Webhook extends Controller
         {
           $food = TRUE;
           $snack = FALSE;
-          $carousel = new CarouselTemplateBuilder([
-            new CarouselColumnTemplateBuilder(
-              'Makanan',
-              'Game menebak tentang makanan khas di daerah seluruh Indonesia',
-              'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
-              [new MessageTemplateActionBuilder('Makanan', 'makanan')]
-            ),
-            new CarouselColumnTemplateBuilder(
-              'Snack/Kue',
-              'Game menebak tentang jajanan khas di daerah seluruh Indonesia',
-              'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
-              [new MessageTemplateActionBuilder('Snack/Kue', 'kue/snack')]
-            )
-          ]);
+          // $carousel = new CarouselTemplateBuilder([
+          //   new CarouselColumnTemplateBuilder(
+          //     'Makanan',
+          //     'Game menebak tentang makanan khas di daerah seluruh Indonesia',
+          //     'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
+          //     [new MessageTemplateActionBuilder('Makanan', 'makanan')]
+          //   ),
+          //   new CarouselColumnTemplateBuilder(
+          //     'Snack/Kue',
+          //     'Game menebak tentang jajanan khas di daerah seluruh Indonesia',
+          //     'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
+          //     [new MessageTemplateActionBuilder('Snack/Kue', 'kue/snack')]
+          //   )
+          // ]);
+          //
+          // $templateMessage = new TemplateMessageBuilder('Silahkan pilih game mana yang ingin dimainkan', $carousel);
+          // $this->bot->replyMessage($event['replyToken'], $templateMessage);
 
-          $templateMessage = new TemplateMessageBuilder('Silahkan pilih game mana yang ingin dimainkan', $carousel);
-          $this->bot->replyMessage($event['replyToken'], $templateMessage);
+          $carousel = file_get_contents("../carousel_message.json"); // template flex message
+                        $result = $httpClient->post(LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply', [
+                            'replyToken' => $event['replyToken'],
+                            'messages'   => [
+                                [
+                                    'type'     => 'flex',
+                                    'altText'  => 'Test Flex Message',
+                                    'contents' => json_decode($carousel)
+                                ]
+                            ],
+                        ]);
+
+                        $response->getBody()->write($result->getJSONDecodedBody());
+                    return $response
+                        ->withHeader('Content-Type', 'application/json')
+                        ->withStatus($result->getHTTPStatus());
 
             //jika memilih makanan
             if (strtolower($userMessage) == 'makanan') {
