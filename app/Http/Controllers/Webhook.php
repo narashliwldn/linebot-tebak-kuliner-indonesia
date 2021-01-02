@@ -186,28 +186,29 @@ class Webhook extends Controller
               ->withHeader('Content-Type', 'application/json')
               ->withStatus($result->getHTTPStatus());
 
-           //jika memilih makanan
-           if (strtolower($userMessage) == 'makanan') {
-             $food = true;
-             // reset score
-             $this->userGateway->setScore($this->user['user_id'], 0);
-             // update number progress
-             $this->userGateway->setUserProgress($this->user['user_id'], 1);
-             // send question no.1 about food
-             $this->sendFoodQuestion($event['replyToken'], 1);
-           }
-           //jika memilih jajanan
-           elseif (strtolower($userMessage) == 'kue/snack') {
-             $snack = true;
-             // reset score
-             $this->userGateway->setScore($this->user['user_id'], 0);
-             // update number progress
-             $this->userGateway->setUserProgress($this->user['user_id'], 1);
-             // send question no.1 about snack
-             $this->sendSnackQuestion($event['replyToken'], 1);
-           }
+       }
+       //jika memilih makanan
+       elseif (strtolower($userMessage) == 'makanan') {
+         $food = true;
+         // reset score
+         $this->userGateway->setScore($this->user['user_id'], 0);
+         // update number progress
+         $this->userGateway->setUserProgress($this->user['user_id'], 1);
+         // send question no.1 about food
+         $this->sendFoodQuestion($event['replyToken'], 1);
+       }
+       //jika memilih jajanan
+       elseif (strtolower($userMessage) == 'kue/snack') {
+         $snack = true;
+         // reset score
+         $this->userGateway->setScore($this->user['user_id'], 0);
+         // update number progress
+         $this->userGateway->setUserProgress($this->user['user_id'], 1);
+         // send question no.1 about snack
+         $this->sendSnackQuestion($event['replyToken'], 1);
+       }
 
-       } else {
+       else {
            $message = 'Silakan kirim pesan "MULAI" untuk memulai kuis.';
            $textMessageBuilder = new TextMessageBuilder($message);
            $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
