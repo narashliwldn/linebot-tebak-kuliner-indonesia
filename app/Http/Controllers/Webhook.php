@@ -188,15 +188,16 @@ class Webhook extends Controller
           // $templateMessage = new TemplateMessageBuilder('Silahkan pilih game mana yang ingin dimainkan', $carousel);
           // $this->bot->replyMessage($event['replyToken'], $templateMessage);
 
+          $httpClient = $httpClient = new CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
           $carousel = file_get_contents("../carousel_message.json"); // template flex message
-                        $result = $httpClient->post(LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply', [
-                            'replyToken' => $event['replyToken'],
-                            'messages'   => [
-                                [
-                                    'type'     => 'flex',
-                                    'altText'  => 'Test Flex Message',
-                                    'contents' => json_decode($carousel)
-                                ]
+          $result = $httpClient->post(LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply', [
+                      'replyToken' => $event['replyToken'],
+                      'messages'   => [
+                              [
+                                'type'     => 'flex',
+                                'altText'  => 'Test Flex Message',
+                                'contents' => json_decode($carousel)
+                              ]
                             ],
                         ]);
 
