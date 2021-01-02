@@ -166,11 +166,11 @@ class Webhook extends Controller
     $userMessage = $event['message']['text'];
     if($this->user['number'] == 0)
     {
+        $food = FALSE;
+        $snack = FALSE;
+        
         if(strtolower($userMessage) == 'mulai')
         {
-          $food = TRUE;
-          $snack = FALSE;
-
           $httpClient = $httpClient = new CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
           $carousel = file_get_contents("../carousel_message.json"); // template flex message
           $result = $httpClient->post(LINEBot::DEFAULT_ENDPOINT_BASE . '/v2/bot/message/reply', [
