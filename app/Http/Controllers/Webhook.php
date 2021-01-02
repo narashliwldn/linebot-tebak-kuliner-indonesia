@@ -173,21 +173,21 @@ class Webhook extends Controller
             new CarouselColumnTemplateBuilder(
               "Makanan",
               "Game menebak tentang makanan khas di daerah seluruh Indonesia",
-              'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
-              [new MessageTemplateActionBuilder("Makanan", "makanan")]
+              "https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg",
+              new MessageTemplateActionBuilder("Makanan", "makanan")
             ),
             new CarouselColumnTemplateBuilder(
               "Snack/Kue",
               "Game menebak tentang jajanan khas di daerah seluruh Indonesia",
-              'https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg',
-              [new MessageTemplateActionBuilder("Snack/Kue", "snack")]
+              "https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg",
+              new MessageTemplateActionBuilder("Snack/Kue", "snack")
             )
           ]);
 
-          $templateMessage = new TemplateMessageBuilder('Silahkan pilih game mana yang ingin dimainkan', $carousel);
-          $this->bot->replyMessage($event['replyToken'], $templateMessage);
           $food = false;
           $snack = false;
+          $templateMessage = new TemplateMessageBuilder('Silahkan pilih game mana yang ingin dimainkan', $carousel);
+          $this->bot->replyMessage($event['replyToken'], $templateMessage);
 
             //jika memilih makanan
             if (strtolower($userMessage) == 'makanan') {
@@ -209,12 +209,6 @@ class Webhook extends Controller
               // send question no.1 about snack
               $this->sendSnackQuestion($event['replyToken'], 1);
             }
-            // // reset score
-            // $this->userGateway->setScore($this->user['user_id'], 0);
-            // // update number progress
-            // $this->userGateway->setUserProgress($this->user['user_id'], 1);
-            // // send question no.1
-            // $this->sendQuestion($event['replyToken'], 1);
 
         } else {
             $message = 'Silakan kirim pesan "MULAI" untuk memulai kuis.';
