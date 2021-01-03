@@ -4,7 +4,7 @@ namespace App\Gateway;
 
 use Illuminate\Database\ConnectionInterface;
 
-class SnackQuestionGateway
+class QuestionGateway
 {
     /**
      * @var ConnectionInterface
@@ -17,9 +17,10 @@ class SnackQuestionGateway
     }
 
     // Question
-    function getSnackQuestion(int $questionNum)
+    function getQuestion(string $category, int $questionNum)
     {
-        $question = $this->db->table('snack_questions')
+        $question = $this->db->table('questions')
+            ->where('category_quest', $category)
             ->where('number', $questionNum)
             ->first();
 
@@ -30,9 +31,10 @@ class SnackQuestionGateway
         return null;
     }
 
-    function isAnswerEqual(int $number, string $answer)
+    function isAnswerEqual(string $category, int $number, string $answer)
     {
-        return $this->db->table('snack_questions')
+        return $this->db->table('questions')
+            ->where('category_quest', $category)
             ->where('number', $number)
             ->where('answer', $answer)
             ->exists();
