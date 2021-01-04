@@ -171,7 +171,7 @@ class Webhook extends Controller
               "Snack/Kue",
               "Game menebak tentang jajanan khas di daerah seluruh Indonesia",
               "https://cdn.idntimes.com/content-images/post/20181212/kuliner-indonessdsdia-87489b810390089e5d15cb5fbdc66865_600x400.jpg",
-              [new MessageTemplateActionBuilder("Snack/Kue", "snack")]
+              [new MessageTemplateActionBuilder("Snack/Kue", "kue/snack")]
             )
           ]);
 
@@ -203,6 +203,8 @@ class Webhook extends Controller
          $this->userGateway->setScore($this->user['user_id'], 0);
          // update number progress
          $this->userGateway->setUserProgress($this->user['user_id'], 1);
+         //set category of question
+         $this->userGateway->setCategory($this->user['user_id'], 'food');
          // send question no.1 about food
          $this->sendQuestion($event['replyToken'], 'food', 1);
        }
@@ -212,6 +214,8 @@ class Webhook extends Controller
          $this->userGateway->setScore($this->user['user_id'], 0);
          // update number progress
          $this->userGateway->setUserProgress($this->user['user_id'], 1);
+         //set category of question
+         $this->userGateway->setCategory($this->user['user_id'], 'snack');
          // send question no.1 about snack
          $this->sendQuestion($event['replyToken'], 'snack', 1);
        }
@@ -224,7 +228,8 @@ class Webhook extends Controller
 
        // if user already begin test
    } else {
-     if($category == 'food'){
+     //dapatkan data kategori yang udah disimpan sebelumnya dari data user
+     if($this->user['category'] == 'food'){
        $this->checkAnswer('food', $userMessage, $event['replyToken']);
      }
      else {
