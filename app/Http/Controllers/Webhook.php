@@ -229,7 +229,7 @@ class Webhook extends Controller
        // if user already begin test
    } else {
      //dapatkan data kategori yang udah disimpan sebelumnya dari data user
-     if($this->user['category'] == 'food'){
+     if($this->user['category_quest'] == 'food'){
        $this->checkAnswer('food', $userMessage, $event['replyToken']);
      }
      else {
