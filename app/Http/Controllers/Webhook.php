@@ -158,8 +158,8 @@ class Webhook extends Controller
    $userMessage = $event['message']['text'];
    if($this->user['number'] == 0 /*true*/)
    {
-       // if(strtolower($userMessage) == 'mulai')
-       // {
+       if(strtolower($userMessage) == 'mulai')
+       {
        //   $carousel = new CarouselTemplateBuilder([
        //      new CarouselColumnTemplateBuilder(
        //        "Makanan",
