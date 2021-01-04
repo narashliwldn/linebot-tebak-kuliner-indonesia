@@ -58,12 +58,12 @@ class UserGateway
                 'user_id' => $userId
             ]);
     }
-    
+
     function setCategory(string $userId, string $category)
     {
         $this->db->table('users')
             ->update([
-                'category' => $category,
+                'category_quest' => $category,
                 'user_id' => $userId
             ]);
     }
